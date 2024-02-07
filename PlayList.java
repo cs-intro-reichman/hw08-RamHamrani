@@ -107,14 +107,21 @@ class PlayList {
      *  If the list is empty, or the given index is negative or too big for this list, 
      *  does nothing and returns -1. */
     public void remove(int i) {
-        if (size != 0 && i > 0 && i< maxSize) {
-            for(int j = this.size -1; j>=i; j--){
-                this.tracks[j-1] = this.tracks[j];
-            }
-            removeLast();
-        }  
+        if (size == 0 || i < 0 || i> maxSize) {
         return;
     }
+    if (size == i) {
+        removeLast();
+    }
+    else{
+        this.tracks[i] = null;
+        size = size -1;
+        for(int j = i; j <= size; j++){
+            this.tracks[j] = this.tracks[j+1]; // "pushes" the empty slot outside of the size slots.
+        }
+    }
+
+}
 
     /** Removes the first track that has the given title from this list.
      *  If such a track is not found, or the list is empty, or the given index
@@ -156,15 +163,14 @@ class PlayList {
      *  If start is negative or greater than size - 1, returns -1.
      */
     private int minIndex(int start) {
-        if (start < size-1 && start >=0) {
+        if (start < this.size && start >=0) {
             int index=start;
             int minDuration = this.tracks[start].getDuration();
-           for(int i = start; i < this.size -1; i++){
-                if (minDuration > this.tracks[i+1].getDuration()) {
-                    minDuration = this.tracks[i+1].getDuration();
+           for(int i = start; i < this.size; i++){
+                if (this.getTrack(i).getDuration() <  minDuration ) {
+                    minDuration = this.getTrack(i).getDuration();
                     index = i;
-                }
-                
+                }   
            }
            return index;
         }
@@ -187,7 +193,7 @@ class PlayList {
         // Uses the selection sort algorithm,  
         // calling the minIndex method in each iteration.
         //// replace this statement with your code
-        for(int i =0; i < this.size; i++){
+        for(int i =0; i < this.size-1; i++){
             int isSorted = this.minIndex(i); 
             if (i != isSorted) {
                 Track temp = tracks[i];
